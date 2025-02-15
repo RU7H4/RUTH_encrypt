@@ -24,14 +24,14 @@ EOF
 
 encode_payload() {
     local payload_file="$1"
-    echo -e "\e[1;33mEncoding the payload in Base64...\e[0m"
+    echo -e "\e[1;38;5;13mEncoding the payload in Base64...\e[0m"
     base64 "$payload_file" | tr -d '\n' > /tmp/encoded_payload.txt
     echo -e "\e[1;32mPayload encoded!\e[0m"
 }
 
 obfuscate_payload() {
     local payload="$1"
-    echo -e "\e[1;33mObfuscating payload...\e[0m"
+    echo -e "\e[1;38;5;13mObfuscating payload...\e[0m"
     local obfuscated_payload=$(echo "$payload" | sed 's/S/s/g' | sed 's/a/b/g' | sed 's/e/f/g')
     echo -e "\e[1;32mPayload obfuscated!\e[0m"
     echo "$obfuscated_payload"
@@ -39,7 +39,7 @@ obfuscate_payload() {
 
 encrypt_payload() {
     local payload="$1"
-    echo -e "\e[1;33mEncrypting payload...\e[0m"
+    echo -e "\e[1;38;5;13mEncrypting payload...\e[0m"
     echo "$payload" | openssl enc -aes-256-cbc -salt -pbkdf2 -out "/tmp/encrypted_payload.enc"
     echo -e "\e[1;32mPayload encrypted!\e[0m"
 }
@@ -60,13 +60,19 @@ get_payload() {
 }
 
 output_payload() {
-    local input_file="$1"
+    local payload_file="$1"
     script_dir=$(dirname "$0")
     output_file="$script_dir/processed_payload"
 
-    echo -e "\e[1;33mOutputting processed payload...\e[0m"
-    cp "$input_file" "$output_file"
-    echo -e "\e[1;32mPayload processed! Output saved to $output_file\e[0m"
+    echo -e "\e[1;38;5;13mOutputting processed payload...\e[0m"
+    
+    # Ensure the file exists and copy the input file to the output location
+    if [[ -f "$payload_file" ]]; then
+        cp "$payload_file" "$output_file"
+        echo -e "\e[1;32mPayload processed! Output saved to $output_file\e[0m"
+    else
+        echo -e "\e[1;31mError: Payload file not found!\e[0m"
+    fi
 }
 
 choose_platform() {
