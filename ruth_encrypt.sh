@@ -40,7 +40,7 @@ obfuscate_payload() {
 encrypt_payload() {
     local payload="$1"
     echo -e "\e[1;33mEncrypting payload...\e[0m"
-    echo "$payload" | openssl enc -aes-256-cbc -salt -pbkdf2 -out /tmp/encrypted_payload.enc
+    echo "$payload" | openssl enc -aes-256-cbc -salt -pbkdf2 -out "/tmp/encrypted_payload.enc"
     echo -e "\e[1;32mPayload encrypted!\e[0m"
 }
 
@@ -61,9 +61,12 @@ get_payload() {
 
 output_payload() {
     local input_file="$1"
+    script_dir=$(dirname "$0")
+    output_file="$script_dir/processed_payload"
+
     echo -e "\e[1;33mOutputting processed payload...\e[0m"
-    cp "$input_file" "/tmp/processed_payload"
-    echo -e "\e[1;32mPayload processed! Output saved to /tmp/processed_payload\e[0m"
+    cp "$input_file" "$output_file"
+    echo -e "\e[1;32mPayload processed! Output saved to $output_file\e[0m"
 }
 
 choose_platform() {
