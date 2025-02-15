@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Clear screen and show banner in pink
 clear_screen() {
     clear
     cat << "EOF"
@@ -22,28 +23,36 @@ Y                               Y                Y
 EOF
 }
 
+# Function to encode the payload in Base64
 encode_payload() {
-    local payload_file="$1"
+    local payload_path="$1"
     echo -e "\e[1;38;5;13mEncoding the payload in Base64...\e[0m"
-    base64 "$payload_file" | tr -d '\n' > /tmp/encoded_payload.txt
+    base64 "$payload_path" > /tmp/encoded_payload.txt
     echo -e "\e[1;32mPayload encoded!\e[0m"
 }
 
-obfuscate_payload() {
-    local payload="$1"
-    echo -e "\e[1;38;5;13mObfuscating payload...\e[0m"
-    local obfuscated_payload=$(echo "$payload" | sed 's/S/s/g' | sed 's/a/b/g' | sed 's/e/f/g')
-    echo -e "\e[1;32mPayload obfuscated!\e[0m"
-    echo "$obfuscated_payload"
-}
-
+# Function to encrypt the payload with AES-256-CBC
 encrypt_payload() {
-    local payload="$1"
+    local input_file="$1"
     echo -e "\e[1;38;5;13mEncrypting payload...\e[0m"
-    echo "$payload" | openssl enc -aes-256-cbc -salt -pbkdf2 -out "/tmp/encrypted_payload.enc"
-    echo -e "\e[1;32mPayload encrypted!\e[0m"
+    echo -n "Enter AES-256-CBC encryption password: "
+    read -s password
+    echo
+    echo -n "Verify password: "
+    read -s verify_password
+    echo
+
+    if [ "$password" != "$verify_password" ]; then
+        echo -e "\e[1;31mPasswords do not match! Try again.\e[0m"
+        return 1
+    fi
+
+    # Encrypt using OpenSSL with AES-256-CBC
+    openssl enc -aes-256-cbc -salt -in "$input_file" -out /tmp/encrypted_payload.enc -pass pass:"$password"
+    echo -e "\e[1;32mPayload encrypted successfully!\e[0m"
 }
 
+# Function to get the payload file and process it
 get_payload() {
     local payload_path=""
     while [[ ! -f "$payload_path" ]]; do
@@ -53,28 +62,18 @@ get_payload() {
             echo -e "\e[1;31mFile not found! Try again.\e[0m"
         fi
     done
+
+    # Encode the payload
     encode_payload "$payload_path"
-    payload=$(cat /tmp/encoded_payload.txt)
-    obfuscated_payload=$(obfuscate_payload "$payload")
-    encrypt_payload "$obfuscated_payload"
-}
 
-output_payload() {
-    local payload_file="$1"
-    script_dir=$(dirname "$0")
-    output_file="$script_dir/processed_payload"
-
-    echo -e "\e[1;38;5;13mOutputting processed payload...\e[0m"
-    
-    # Ensure the file exists and copy the input file to the output location
-    if [[ -f "$payload_file" ]]; then
-        cp "$payload_file" "$output_file"
-        echo -e "\e[1;32mPayload processed! Output saved to $output_file\e[0m"
-    else
-        echo -e "\e[1;31mError: Payload file not found!\e[0m"
+    # Encrypt the payload
+    encrypt_payload /tmp/encoded_payload.txt
+    if [ $? -eq 0 ]; then
+        echo -e "\e[1;32mEncrypted payload saved to /tmp/encrypted_payload.enc\e[0m"
     fi
 }
 
+# Choose platform and handle the payload processing
 choose_platform() {
     clear_screen
     echo -e "\e[1;36mChoose your platform:\e[0m"
@@ -88,7 +87,6 @@ choose_platform() {
         1|2)
             echo -e "\e[1;36mProcessing payload...\e[0m"
             get_payload
-            output_payload "$input_file"
             ;;
         3)
             main_menu
@@ -104,6 +102,7 @@ choose_platform() {
     esac
 }
 
+# Main menu function
 main_menu() {
     clear_screen
     echo -e "\e[1;36mWelcome! Choose an option:\e[0m"
@@ -126,4 +125,5 @@ main_menu() {
     esac
 }
 
+# Start the main menu
 main_menu
