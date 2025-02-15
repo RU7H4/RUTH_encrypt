@@ -1,8 +1,6 @@
 #!/bin/bash
 TEMP_FILE="/tmp/decrypted_payload"
-cleanup() {
-    [[ -f "$TEMP_FILE" ]] && rm -f "$TEMP_FILE"
-}
+cleanup() { [[ -f "$TEMP_FILE" ]] && rm -f "$TEMP_FILE"; }
 trap cleanup EXIT
 clear_screen() {
     clear
@@ -30,7 +28,6 @@ encrypt_payload() {
         echo -e "\e[1;31mFile not found: $1\e[0m"
         return 1
     fi
-
     encoded=$(base64 "$1")
     if [[ $? -ne 0 ]]; then
         echo -e "\e[1;31mError encoding file.\e[0m"
@@ -47,7 +44,7 @@ d3cRyP73() {
     fi
     chmod +x "$TEMP_FILE"
     echo -e "\e[1;33mPayload decoded and saved to $TEMP_FILE.\e[0m"
-    read -p $'\e[1;33mAre you sure you want to execute the payload? (y/N): \e[0m' confirm
+    read -rp $'\e[1;33mAre you sure you want to execute the payload? (y/N): \e[0m' confirm
     if [[ "$confirm" =~ ^[Yy]$ ]]; then
         echo -e "\e[1;33mExecuting decoded payload...\e[0m"
         "$TEMP_FILE"
@@ -58,22 +55,16 @@ d3cRyP73() {
 get_payload() {
     local payload_path=""
     while true; do
-        echo -e "\e[1;34mEnter the full path to your payload (APK or EXE):\e[0m"
-        read -r payload_path
-        if [[ -f "$payload_path" ]]; then
-            break
-        else
-            echo -e "\e[1;31mFile not found at '$payload_path'. Please try again.\e[0m"
-        fi
+        read -rp $'\e[1;34mEnter the full path to your payload (APK or EXE): \e[0m' payload_path
+        if [[ -f "$payload_path" ]]; then break; else echo -e "\e[1;31mFile not found at '$payload_path'. Please try again.\e[0m"; fi
     done
     encrypt_payload "$payload_path"
 }
 dyn4M1C_ex3c() {
-    echo -e "\e[1;34mEnter the command to execute dynamically:\e[0m"
-    read -r usrCmd
+    read -rp $'\e[1;34mEnter the command to execute dynamically: \e[0m' usrCmd
     if [[ -n "$usrCmd" ]]; then
         echo -e "\e[1;33mYou entered: $usrCmd\e[0m"
-        read -p $'\e[1;33mAre you sure you want to execute this command? (y/N): \e[0m' cmd_confirm
+        read -rp $'\e[1;33mAre you sure you want to execute this command? (y/N): \e[0m' cmd_confirm
         if [[ "$cmd_confirm" =~ ^[Yy]$ ]]; then
             echo -e "\e[1;33mExecuting: $usrCmd\e[0m"
             eval "$usrCmd"
@@ -91,7 +82,7 @@ choose_platform() {
     echo -e "\e[1;32m2.\e[0m \e[1;33mWindows\e[0m"
     echo -e "\e[1;32m3.\e[0m \e[1;33mBack to Main Menu\e[0m"
     echo -e "\e[1;32m4.\e[0m \e[1;33mExit\e[0m"
-    read -p "Choice: " choice
+    read -rp "Choice: " choice
     case $choice in
         1|2)
             echo -e "\e[1;36mProcessing payload...\e[0m"
@@ -102,41 +93,23 @@ choose_platform() {
                 echo -e "\e[1;31mFailed to encode payload.\e[0m"
             fi
             ;;
-        3)
-            main_menu
-            ;;
-        4)
-            echo -e "\e[1;31mExiting...\e[0m"
-            exit 0
-            ;;
-        *)
-            echo -e "\e[1;31mInvalid choice!\e[0m"
-            choose_platform
-            ;;
+        3) main_menu ;;
+        4) echo -e "\e[1;31mExiting...\e[0m"; exit 0 ;;
+        *) echo -e "\e[1;31mInvalid choice!\e[0m"; choose_platform ;;
     esac
 }
 main_menu() {
     clear_screen
     echo -e "\e[1;36mWelcome! Choose an option:\e[0m"
-    echo -e "\e[1;32m1.\e[0m \e[1;33mChoose Platform (Android/Windows)\e[0m"
+    echo -e "\e[1;32m1.\e[0m \e[1;33mChoose Platform (Android/Windows payload processing)\e[0m"
     echo -e "\e[1;32m2.\e[0m \e[1;33mDynamic Command Execution\e[0m"
     echo -e "\e[1;32m3.\e[0m \e[1;33mExit\e[0m"
-    read -p "Choice: " main_choice
+    read -rp "Choice: " main_choice
     case $main_choice in
-        1)
-            choose_platform
-            ;;
-        2)
-            dyn4M1C_ex3c
-            ;;
-        3)
-            echo -e "\e[1;31mExiting...\e[0m"
-            exit 0
-            ;;
-        *)
-            echo -e "\e[1;31mInvalid choice!\e[0m"
-            main_menu
-            ;;
+        1) choose_platform ;;
+        2) dyn4M1C_ex3c ;;
+        3) echo -e "\e[1;31mExiting...\e[0m"; exit 0 ;;
+        *) echo -e "\e[1;31mInvalid choice!\e[0m"; main_menu ;;
     esac
 }
 main_menu
