@@ -27,7 +27,7 @@ EOF
 encode_payload() {
     local payload_path="$1"
     echo -e "\e[1;38;5;13mEncoding the payload in Base64...\e[0m"
-    base64 "$payload_path" > /tmp/encoded_payload.txt
+    base64 "$payload_path" > /home/encoded_payload.txt
     echo -e "\e[1;32mPayload encoded!\e[0m"
 }
 
@@ -48,7 +48,7 @@ encrypt_payload() {
     fi
 
     # Encrypt using OpenSSL with AES-256-CBC
-    openssl enc -aes-256-cbc -salt -in "$input_file" -out /tmp/encrypted_payload.enc -pass pass:"$password"
+    openssl enc -aes-256-cbc -salt -in "$input_file" -out //encrypted_payload.enc -pass pass:"$password"
     echo -e "\e[1;32mPayload encrypted successfully!\e[0m"
 }
 
@@ -67,9 +67,9 @@ get_payload() {
     encode_payload "$payload_path"
 
     # Encrypt the payload
-    encrypt_payload /tmp/encoded_payload.txt
+    encrypt_payload /home/encoded_payload.txt
     if [ $? -eq 0 ]; then
-        echo -e "\e[1;32mEncrypted payload saved to /tmp/encrypted_payload.enc\e[0m"
+        echo -e "\e[1;32mEncrypted payload saved to /home/encrypted_payload.enc\e[0m"
     fi
 }
 
