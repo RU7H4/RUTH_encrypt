@@ -1,4 +1,5 @@
 #!/bin/bash
+
 TEMP_FILE="/tmp/decrypted_payload"
 cleanup() { [[ -f "$TEMP_FILE" ]] && rm -f "$TEMP_FILE"; }
 trap cleanup EXIT
@@ -6,7 +7,7 @@ trap cleanup EXIT
 clear_screen() {
     clear
     cat << "EOF"
-[1;32m
+[1;35m
 .S_sSSs     .S       S.   sdSS_SSSSSSbs   .S    S.   
 .SS~YS%%b   .SS       SS.  YSSS~S%SSSSSP  .SS    SS.  
 S%S   `S%b  S%S       S%S       S%S       S%S    S%S  
