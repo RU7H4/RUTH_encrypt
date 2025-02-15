@@ -2,6 +2,7 @@
 TEMP_FILE="/tmp/decrypted_payload"
 cleanup() { [[ -f "$TEMP_FILE" ]] && rm -f "$TEMP_FILE"; }
 trap cleanup EXIT
+
 clear_screen() {
     clear
     cat << "EOF"
@@ -23,6 +24,7 @@ Y                               Y                Y
 [0m
 EOF
 }
+
 encrypt_payload() {
     if [[ ! -f "$1" ]]; then
         echo -e "\e[1;31mFile not found: $1\e[0m"
@@ -35,6 +37,7 @@ encrypt_payload() {
     fi
     echo "$encoded"
 }
+
 d3cRyP73() {
     local encoded_payload="$1"
     echo "$encoded_payload" | base64 --decode > "$TEMP_FILE"
@@ -52,14 +55,27 @@ d3cRyP73() {
         echo -e "\e[1;31mExecution canceled by user.\e[0m"
     fi
 }
+
 get_payload() {
     local payload_path=""
-    while true; do
-        read -rp $'\e[1;34mEnter the full path to your payload (APK or EXE): \e[0m' payload_path
-        if [[ -f "$payload_path" ]]; then break; else echo -e "\e[1;31mFile not found at '$payload_path'. Please try again.\e[0m"; fi
+    local attempts=0
+    local max_attempts=3
+
+    while [[ $attempts -lt $max_attempts ]]; do
+        read -e -p $'\e[1;34mEnter the full path to your payload (APK or EXE): \e[0m' payload_path
+        if [[ -f "$payload_path" ]]; then
+            encrypt_payload "$payload_path"
+            return
+        else
+            echo -e "\e[1;31mFile not found at '$payload_path'. Please try again.\e[0m"
+        fi
+        ((attempts++))
     done
-    encrypt_payload "$payload_path"
+
+    echo -e "\e[1;31mMaximum attempts reached. Returning to menu.\e[0m"
+    main_menu
 }
+
 dyn4M1C_ex3c() {
     read -rp $'\e[1;34mEnter the command to execute dynamically: \e[0m' usrCmd
     if [[ -n "$usrCmd" ]]; then
@@ -75,6 +91,7 @@ dyn4M1C_ex3c() {
         echo -e "\e[1;31mNo command entered!\e[0m"
     fi
 }
+
 choose_platform() {
     clear_screen
     echo -e "\e[1;36mChoose your platform:\e[0m"
@@ -98,6 +115,7 @@ choose_platform() {
         *) echo -e "\e[1;31mInvalid choice!\e[0m"; choose_platform ;;
     esac
 }
+
 main_menu() {
     clear_screen
     echo -e "\e[1;36mWelcome! Choose an option:\e[0m"
@@ -112,4 +130,5 @@ main_menu() {
         *) echo -e "\e[1;31mInvalid choice!\e[0m"; main_menu ;;
     esac
 }
+
 main_menu
