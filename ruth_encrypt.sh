@@ -61,19 +61,9 @@ get_payload() {
 
 output_payload() {
     local input_file="$1"
-    local extension="${input_file##*.}"
-    local output_file="/tmp/processed_payload.$extension"
-
     echo -e "\e[1;33mOutputting processed payload...\e[0m"
-
-    if [[ "$extension" == "exe" || "$extension" == "apk" ]]; then
-        # Directly output the encrypted payload into the file with the correct extension
-        cp "$input_file" "$output_file"
-        echo -e "\e[1;32mPayload processed! Output saved to $output_file\e[0m"
-    else
-        echo -e "\e[1;31mUnsupported file extension! Only .exe and .apk are supported.\e[0m"
-        exit 1
-    fi
+    cp "$input_file" "/tmp/processed_payload"
+    echo -e "\e[1;32mPayload processed! Output saved to /tmp/processed_payload\e[0m"
 }
 
 choose_platform() {
